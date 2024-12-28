@@ -1,0 +1,44 @@
+# Ignore Maven target directory
+/target/
+
+# Ignore IDE specific files
+/.idea/
+/*.iml
+/.classpath
+/.project
+/.settings/
+/*.sublime-project
+/*.sublime-workspace
+
+# Ignore local configuration files
+/.env
+/.env.local
+/.env.*.local
+
+# Ignore log files
+*.log
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore Maven wrapper files (if not needed)
+.mvn/
+mvnw
+mvnw.cmd
+
+# Ignore any other files that should not be pushed
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.tar
+*.7z
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+*.log
