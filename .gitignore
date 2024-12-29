@@ -39,6 +39,7 @@ mvnw.cmd
 *.7z
 *.swp
 *.swo
+*.md
 *.tmp
 *.bak
 *.orig
