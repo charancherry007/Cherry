@@ -7,8 +7,10 @@ public enum WebPageNameXpaths {
 	 * name (WebPageName) with WebPage Name of your desired.
 	 */
 
-	EXAMPLE_BUTTON("//button[@id='exampleButton']"), EXAMPLE_DIV("//div[@id='example']"),
-	EXAMPLE_INPUT("//input[@name='exampleInput']");
+	EXAMPLE_BUTTON("//button[@id='loginbutton']"),
+	EXAMPLE_DIV("//div[@id='example']"),
+	EXAMPLE_INPUT("//input[@name='exampleInput']"),
+	EXAMPLE_Link("//a[@class='exampleClass']");
 
 	private final String xpath;
 
