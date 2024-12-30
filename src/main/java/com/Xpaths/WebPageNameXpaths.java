@@ -10,7 +10,8 @@ public enum WebPageNameXpaths {
 	EXAMPLE_BUTTON("//button[@id='loginbutton']"),
 	EXAMPLE_DIV("//div[@id='example']"),
 	EXAMPLE_INPUT("//input[@name='exampleInput']"),
-	EXAMPLE_LINK("//a[@class='exampleClass']");
+	EXAMPLE_LINK("//yt-searchbox[@role='search']"),
+	EXAMPLE_CONTAINER("//div[@class='yt-lockup-view-model-wiz__metadata']");
 
 	private final String xpath;
 

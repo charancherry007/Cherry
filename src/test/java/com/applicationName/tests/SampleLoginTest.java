@@ -7,17 +7,20 @@ import com.Xpaths.WebPageNameXpaths;
 
 public class SampleLoginTest {
 	private Utility utility;
+	private WebPageNameXpaths xpaths;
 
 	@BeforeClass
 	public void setUp() {
 		utility = new Utility();
-		utility.navigateTo("chrome", "https://www.facebook.com");
+		utility.navigateTo("chrome", "https://www.youtube.com");
 	}
 
+	@SuppressWarnings("static-access")
 	@Test
 	public void sampleTest() {
-		utility.clickOn(WebPageNameXpaths.EXAMPLE_BUTTON.getXpath());
-		utility.saveValue("Number", "$3");
-		utility.getValue("Number");
+		utility.clickOn(xpaths.EXAMPLE_LINK.getXpath());
+		utility.keyboardActions("Automation Tutorial enter");
+		utility.waitUntilPageLoaded();
+		utility.scrollRecursively(xpaths.EXAMPLE_CONTAINER.getXpath());
 	}
 }

@@ -27,9 +27,8 @@ public class Utility {
 	 * This class contains all the required methods for automating. It contains
 	 * methods to Specifying browser Navigating to url,click, enterText, wait until
 	 * visible, wait until clickable, get Text, Handling iFrames, Storing values and
-	 * getting those values. Actions are also used to perform keyboard actions.
-	 * All the methods in this class contain common @param
-	 * which is String XPath.
+	 * getting those values. Actions are also used to perform keyboard actions. All
+	 * the methods in this class contain common @param which is String XPath.
 	 */
 
 	private WebDriver driver;
@@ -328,5 +327,36 @@ public class Utility {
 	 */
 	public Boolean waitUntilPageLoaded() {
 		return ((JavascriptExecutor) js).executeScript("return document.readyState").equals("complete");
+	}
+
+	/**
+	 * Method to scroll a webpage recursively. Used for content that loads new.
+	 * Element when we scroll down. Ex: youtube, instagram feed.
+	 * 
+	 * @param xpath String
+	 */
+	public void scrollRecursively(String xpath) {
+		List<WebElement> elements = driver.findElements(By.xpath(xpath));
+		int i = elements.size();
+		System.out.println("Initial size of elements: " + i);
+		boolean conditionMet = false;
+		while (!conditionMet) {
+			if (elements.size() > 0) {
+				WebElement lastElement = elements.get(elements.size() - 1);
+				js.executeScript("arguments[0].scrollIntoView(true);", lastElement);
+				waitUntilPageLoaded();
+				elements = driver.findElements(By.xpath(xpath));
+				if (elements.size() == i) {
+					conditionMet = true;
+				} else {
+					i = elements.size();
+					System.out.println("Iterated size of elements: " + i);
+				}
+			} else {
+				System.out.println("No elements found with the given xpath.");
+				break;
+			}
+		}
+		System.out.println("Final size of elements: " + i);
 	}
 }
