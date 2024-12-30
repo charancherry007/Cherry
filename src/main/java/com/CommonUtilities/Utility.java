@@ -9,12 +9,14 @@ import java.util.Locale;
 import java.util.Map;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -25,12 +27,15 @@ public class Utility {
 	 * This class contains all the required methods for automating. It contains
 	 * methods to Specifying browser Navigating to url,click, enterText, wait until
 	 * visible, wait until clickable, get Text, Handling iFrames, Storing values and
-	 * getting those values. All the methods in this class contain common @param
+	 * getting those values. Actions are also used to perform keyboard actions.
+	 * All the methods in this class contain common @param
 	 * which is String XPath.
 	 */
 
 	private WebDriver driver;
+	private Actions actions;
 	private WebDriverWait wait;
+	private JavascriptExecutor js;
 	private Map<String, Object> storeValue = new HashMap<>();
 
 	/**
@@ -62,8 +67,11 @@ public class Utility {
 			throw new IllegalArgumentException("Unsupported browser: " + browserName);
 		}
 		this.wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+		this.actions = new Actions(driver);
+		this.js = (JavascriptExecutor) driver;
 		driver.manage().window().maximize();
 		driver.get(url);
+		waitUntilPageLoaded();
 	}
 
 	/**
@@ -215,7 +223,6 @@ public class Utility {
 	public void jsScrollToElement(String xpath) {
 		waitUntilElementVisible(xpath);
 		WebElement element = locateElement(xpath);
-		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].scrollIntoView(true);", element);
 	}
 
@@ -227,7 +234,6 @@ public class Utility {
 	public void jsClickElement(String xpath) {
 		jsScrollToElement(xpath);
 		WebElement element = locateElement(xpath);
-		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", element);
 	}
 
@@ -261,10 +267,66 @@ public class Utility {
 	 */
 	public Object getValue(String objectName) {
 		if (storeValue.containsKey(objectName)) {
-			System.out.println("The value of "+objectName+" is: "+storeValue.get(objectName));
+			System.out.println("The value of " + objectName + " is: " + storeValue.get(objectName));
 			return storeValue.get(objectName);
 		} else {
 			throw new IllegalArgumentException("No value found for the objectName: " + objectName);
 		}
+	}
+
+	/**
+	 * This method will move to the element and perform click action using Actions.
+	 * 
+	 * @param xpath which is a String.
+	 */
+	public void clickAction(String xpath) {
+		actions.moveToElement(locateElement(xpath)).click().build().perform();
+	}
+
+	/**
+	 * This method will mimic the keyboard actions.
+	 * 
+	 * @param keys String
+	 */
+	public void keyboardActions(String keys) {
+		String[] keyArray = keys.split(" ");
+		for (String key : keyArray) {
+			switch (key.toLowerCase()) {
+			case "enter":
+				actions.sendKeys(Keys.ENTER).perform();
+				break;
+			case "tab":
+				actions.sendKeys(Keys.TAB).perform();
+				break;
+			case "backspace":
+				actions.sendKeys(Keys.BACK_SPACE).perform();
+				break;
+			case "ctrl+a":
+				actions.keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL).perform();
+				break;
+			case "ctrl+c":
+				actions.keyDown(Keys.CONTROL).sendKeys("c").keyUp(Keys.CONTROL).perform();
+				break;
+			case "ctrl+v":
+				actions.keyDown(Keys.CONTROL).sendKeys("v").keyUp(Keys.CONTROL).perform();
+				break;
+			case "shift":
+				actions.keyDown(Keys.SHIFT).perform();
+				break;
+			case "shift_release":
+				actions.keyUp(Keys.SHIFT).perform();
+				break;
+			default:
+				actions.sendKeys(key).perform();
+				break;
+			}
+		}
+	}
+
+	/**
+	 * This method will wait until the DOM is loaded completly.
+	 */
+	public Boolean waitUntilPageLoaded() {
+		return ((JavascriptExecutor) js).executeScript("return document.readyState").equals("complete");
 	}
 }
