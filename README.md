@@ -39,6 +39,13 @@ This project offers a comprehensive solution for automating web interactions thr
 - **jsClickElement(String xpath)**: Executes a click action on the specified element using JavaScript, ensuring reliable interaction even in cases where traditional click methods may fail, thereby enhancing the robustness of automated tests.
 - **saveValue(String objectName, Object value)**: Stores a value under a specified reference name, enabling easy retrieval and management of data throughout your automated tests, and facilitating better organization and clarity in your test scripts.
 - **getValue(String objectName)**: Retrieves the stored value associated with the specified reference name, allowing for efficient data access and manipulation within your automated tests, and promoting better test organization and clarity.
+- **clickAction(String xpath)**: Utilizes the Actions class in Selenium to perform click action.
+- **keyboardActions(String keys)**: Method takes a string of space-separated key commands and performs corresponding keyboard actions using Selenium's Actions class. It supports various keys such as "Enter," "Tab," "Backspace," and combinations like "Ctrl+A," "Ctrl+C," and "Ctrl+V," as well as handling Shift key presses. For any unrecognized keys, it sends them as regular keystrokes.
+- **waitUntilPageLoaded()**: Checks if the web page has fully loaded by executing a JavaScript command that returns the document's readiness state.
+- **scrollRecursively(String xpath)**: Method scrolls through a webpage to load additional elements matching a specified XPath. It initially retrieves the elements and enters a loop where it scrolls to the last element, waits for the page to load, and checks if new elements have been loaded. The process continues until no new elements are found or an exception occurs. It also handles exceptions, specifically logging if no elements are found or if any other error occurs during the scrolling process.
+- **commonWait(int seconds)**: It pauses the execution of the current thread for a specified number of seconds by using Thread.sleep(). It takes an integer parameter representing the duration in seconds, converts it to milliseconds, and handles any InterruptedException by restoring the thread's interrupted status.
+- **getProperty(String xpath, String attribute)**: Retrieves the value of a specified attribute from a web element identified by the given XPath.
+- **executeJS(String xpath, String arguments)**: Executes a JavaScript snippet on a web element identified by the given XPath.
 
 # In-Pipeline
 
