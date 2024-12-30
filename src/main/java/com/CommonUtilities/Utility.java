@@ -8,8 +8,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.ElementNotInteractableException;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -34,6 +40,7 @@ public class Utility {
 	private WebDriver driver;
 	private Actions actions;
 	private WebDriverWait wait;
+	private WebElement element;
 	private JavascriptExecutor js;
 	private Map<String, Object> storeValue = new HashMap<>();
 
@@ -79,7 +86,12 @@ public class Utility {
 	 * @param xpath type @return element.
 	 */
 	public WebElement locateElement(String xpath) {
-		WebElement element = driver.findElement(By.xpath(xpath));
+		try {
+			waitUntilElementVisible(xpath);
+			element = driver.findElement(By.xpath(xpath));
+		} catch (NoSuchElementException e) {
+			System.out.println("There was no such element found with the given xpath : " + xpath);
+		}
 		return element;
 	}
 
@@ -89,7 +101,12 @@ public class Utility {
 	 * @param xpath Type @return boolean.
 	 */
 	public WebElement waitUntilElementClickable(String xpath) {
-		waitUntilElementVisible(xpath);
+		try {
+			waitUntilElementVisible(xpath);
+		} catch (TimeoutException e) {
+			System.out.println("There was no such element found with xpath : " + xpath
+					+ " retried for 30 Seconds with 5 Seconds interval");
+		}
 		return wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
 	}
 
@@ -108,9 +125,26 @@ public class Utility {
 	 * @param xpath String.
 	 */
 	public void clickOn(String xpath) {
-		waitUntilElementClickable(xpath);
-		WebElement element = locateElement(xpath);
-		element.click();
+		try {
+			waitUntilElementClickable(xpath);
+			element = locateElement(xpath);
+			element.click();
+		} catch (Exception e) {
+			if (e instanceof ElementNotInteractableException) {
+				jsScrollToElement(xpath);
+				element.click();
+				System.out.println("The element with xpath : " + xpath
+						+ " was out of range. So the element was scrolled and clicked catching ElementNotInteractableException.");
+			} else if (e instanceof StaleElementReferenceException) {
+				System.out.println("The element with xpath : " + xpath
+						+ " is no longer available in the DOM StaleElementReferenceException.");
+			} else if (e instanceof ElementClickInterceptedException) {
+				System.out.println("The click was interrupted for the element with xpath : " + xpath
+						+ " causing ElementClickInterceptedException.");
+			} else {
+				System.out.println("The Exception " + e + " was not handeled.");
+			}
+		}
 	}
 
 	/**
@@ -120,10 +154,28 @@ public class Utility {
 	 * @param text  String.
 	 */
 	public void enterText(String xpath, String text) {
-		waitUntilElementClickable(xpath);
-		WebElement element = locateElement(xpath);
-		element.clear();
-		element.sendKeys(text);
+		try {
+			waitUntilElementClickable(xpath);
+			element = locateElement(xpath);
+			element.clear();
+			element.sendKeys(text);
+		} catch (Exception e) {
+			if (e instanceof ElementNotInteractableException) {
+				jsScrollToElement(xpath);
+				element.clear();
+				element.sendKeys(text);
+				System.out.println("The element with xpath : " + xpath
+						+ " was out of range. So the element was scrolled and clicked catching ElementNotInteractableException.");
+			} else if (e instanceof StaleElementReferenceException) {
+				System.out.println("The element with xpath : " + xpath
+						+ " is no longer available in the DOM StaleElementReferenceException.");
+			} else if (e instanceof ElementClickInterceptedException) {
+				System.out.println("The click was interrupted for the element with xpath : " + xpath
+						+ " causing ElementClickInterceptedException.");
+			} else {
+				System.out.println("The Exception " + e + " was not handeled.");
+			}
+		}
 	}
 
 	/**
@@ -132,9 +184,28 @@ public class Utility {
 	 * @param xpath Method type @return String element text.
 	 */
 	public String getText(String xpath) {
-		waitUntilElementVisible(xpath);
-		WebElement element = locateElement(xpath);
-		return element.getText();
+		String value = null;
+		try {
+			waitUntilElementVisible(xpath);
+			element = locateElement(xpath);
+			value = element.getText();
+		} catch (Exception e) {
+			if (e instanceof ElementNotInteractableException) {
+				jsScrollToElement(xpath);
+				value = element.getText();
+				System.out.println("The element with xpath : " + xpath
+						+ " was out of range. So the element was scrolled and clicked catching ElementNotInteractableException.");
+			} else if (e instanceof StaleElementReferenceException) {
+				System.out.println("The element with xpath : " + xpath
+						+ " is no longer available in the DOM StaleElementReferenceException.");
+			} else if (e instanceof ElementClickInterceptedException) {
+				System.out.println("The click was interrupted for the element with xpath : " + xpath
+						+ " causing ElementClickInterceptedException.");
+			} else {
+				System.out.println("The Exception " + e + " was not handeled.");
+			}
+		}
+		return value;
 	}
 
 	/**
@@ -221,8 +292,16 @@ public class Utility {
 	 */
 	public void jsScrollToElement(String xpath) {
 		waitUntilElementVisible(xpath);
-		WebElement element = locateElement(xpath);
-		js.executeScript("arguments[0].scrollIntoView(true);", element);
+		element = locateElement(xpath);
+		try {
+			js.executeScript("arguments[0].scrollIntoView(true);", element);
+		} catch (Exception e) {
+			if (e instanceof JavascriptException) {
+				System.out.println("There was a runtime error occured while performing click.");
+			} else {
+				System.out.println("Ther was an " + e + " Exception occured.");
+			}
+		}
 	}
 
 	/**
@@ -232,8 +311,16 @@ public class Utility {
 	 */
 	public void jsClickElement(String xpath) {
 		jsScrollToElement(xpath);
-		WebElement element = locateElement(xpath);
-		js.executeScript("arguments[0].click();", element);
+		element = locateElement(xpath);
+		try {
+			js.executeScript("arguments[0].click();", element);
+		} catch (Exception e) {
+			if (e instanceof JavascriptException) {
+				System.out.println("There was a runtime error occured while performing click.");
+			} else {
+				System.out.println("Ther was an " + e + " Exception occured.");
+			}
+		}
 	}
 
 	/**
@@ -336,27 +423,95 @@ public class Utility {
 	 * @param xpath String
 	 */
 	public void scrollRecursively(String xpath) {
-		List<WebElement> elements = driver.findElements(By.xpath(xpath));
-		int i = elements.size();
-		System.out.println("Initial size of elements: " + i);
-		boolean conditionMet = false;
-		while (!conditionMet) {
-			if (elements.size() > 0) {
-				WebElement lastElement = elements.get(elements.size() - 1);
-				js.executeScript("arguments[0].scrollIntoView(true);", lastElement);
-				waitUntilPageLoaded();
-				elements = driver.findElements(By.xpath(xpath));
-				if (elements.size() == i) {
-					conditionMet = true;
+		commonWait(5);
+		try {
+			List<WebElement> elements = driver.findElements(By.xpath(xpath));
+			int i = elements.size();
+			System.out.println("Initial size of elements: " + i);
+			boolean conditionMet = false;
+			while (!conditionMet) {
+				if (elements.size() > 0) {
+					WebElement lastElement = elements.get(elements.size() - 1);
+					actions.moveToElement(lastElement).perform();
+					js.executeScript("arguments[0].scrollIntoView(true);", lastElement);
+					waitUntilPageLoaded();
+					commonWait(5);
+					elements = driver.findElements(By.xpath(xpath));
+					if (elements.size() == i) {
+						conditionMet = true;
+					} else {
+						i = elements.size();
+						System.out.println("Iterated size of elements: " + i);
+					}
 				} else {
-					i = elements.size();
-					System.out.println("Iterated size of elements: " + i);
+					System.out.println("No elements found with the given xpath.");
+					break;
 				}
+			}
+			System.out.println("Final size of elements: " + i);
+
+		} catch (Exception e) {
+			if (e instanceof NoSuchElementException) {
+				System.out.println("There was no such element found with xpath : " + xpath);
 			} else {
-				System.out.println("No elements found with the given xpath.");
-				break;
+				System.out.println("There was an " + e + " Exception occured while scrolling recursively.");
 			}
 		}
-		System.out.println("Final size of elements: " + i);
+	}
+
+	/**
+	 * Method to wait until specific period of time
+	 * 
+	 * @param seconds int
+	 */
+	public void commonWait(int seconds) {
+		try {
+			Thread.sleep(seconds * 1000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
+	/**
+	 * Method will return the specified property/attribute of an element.
+	 * 
+	 * @param xpath String
+	 * 
+	 * @return value String
+	 */
+	public String getProperty(String xpath, String attribute) {
+		String value = null;
+		WebElement element = locateElement(xpath);
+		try {
+			value = element.getAttribute(attribute);
+		} catch (Exception e) {
+			if (e instanceof StaleElementReferenceException) {
+				System.out.println("The element with xpath : " + xpath
+						+ " is no longer available in the DOM StaleElementReferenceException.");
+			} else {
+				System.out.println("There was an " + e + " Exception while fetching " + attribute + " value.");
+			}
+		}
+		return value;
+	}
+
+	/**
+	 * Method to execute javascript on an element.
+	 * 
+	 * @param xpath String
+	 * @param args  String
+	 */
+	public void executeJS(String xpath, String arguments) {
+		element = locateElement(xpath);
+		try {
+			js.executeScript(arguments, element);
+		} catch (Exception e) {
+			if (e instanceof JavascriptException) {
+				System.out.println("There was a runtime error occured while performing " + arguments
+						+ " check the snippet for syntax/errors.");
+			} else {
+				System.out.println("Ther was an " + e + " Exception occured.");
+			}
+		}
 	}
 }
