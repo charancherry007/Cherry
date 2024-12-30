@@ -10,7 +10,7 @@ public enum WebPageNameXpaths {
 	EXAMPLE_BUTTON("//button[@id='loginbutton']"),
 	EXAMPLE_DIV("//div[@id='example']"),
 	EXAMPLE_INPUT("//input[@name='exampleInput']"),
-	EXAMPLE_Link("//a[@class='exampleClass']");
+	EXAMPLE_LINK("//a[@class='exampleClass']");
 
 	private final String xpath;
 
