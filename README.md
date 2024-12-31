@@ -26,6 +26,9 @@ This project offers a comprehensive solution for automating web interactions thr
 ## Methods Overview
 
 - **navigateTo(String browserName, String url)**: Instantly launches the specified browser and navigates to the provided URL, streamlining the setup process for automated tests and ensuring a quick start to your web interactions.
+
+      Utility.navigateTo("chrome","www.example.com");
+  
 - **locateElement(String xpath)**: Accurately locates a web element using the specified XPath, enabling precise interactions and ensuring that your automation scripts target the correct elements on the page.
 - **waitUntilElementClickable(String xpath)**: Monitors the specified element until it becomes clickable, ensuring that interactions occur only when the element is ready, thereby enhancing the stability and reliability of your automated tests.
 - **clickOn(String xpath)**: Executes a click action on the specified element, ensuring that the interaction is performed only when the element is ready, thereby promoting smoother and more reliable automation workflows.
@@ -41,11 +44,29 @@ This project offers a comprehensive solution for automating web interactions thr
 - **getValue(String objectName)**: Retrieves the stored value associated with the specified reference name, allowing for efficient data access and manipulation within your automated tests, and promoting better test organization and clarity.
 - **clickAction(String xpath)**: Utilizes the Actions class in Selenium to perform click action.
 - **keyboardActions(String keys)**: Method takes a string of space-separated key commands and performs corresponding keyboard actions using Selenium's Actions class. It supports various keys such as "Enter," "Tab," "Backspace," and combinations like "Ctrl+A," "Ctrl+C," and "Ctrl+V," as well as handling Shift key presses. For any unrecognized keys, it sends them as regular keystrokes.
+Example: Enter **Automation Tutorial** as text and press **ENTER** key.
+
+      Utility.keyboardActions("Automation Tutorial enter");
+
 - **waitUntilPageLoaded()**: Checks if the web page has fully loaded by executing a JavaScript command that returns the document's readiness state.
 - **scrollRecursively(String xpath)**: Method scrolls through a webpage to load additional elements matching a specified XPath. It initially retrieves the elements and enters a loop where it scrolls to the last element, waits for the page to load, and checks if new elements have been loaded. The process continues until no new elements are found or an exception occurs. It also handles exceptions, specifically logging if no elements are found or if any other error occurs during the scrolling process.
-- **commonWait(int seconds)**: It pauses the execution of the current thread for a specified number of seconds by using Thread.sleep(). It takes an integer parameter representing the duration in seconds, converts it to milliseconds, and handles any InterruptedException by restoring the thread's interrupted status.
+- **commonWait(int seconds)**: It pauses the execution of the current thread for a specified number of seconds by using Thread.sleep(). It takes an integer parameter representing the duration in seconds, converts it to milliseconds, and handles any InterruptedException by restoring the thread's interrupted status.The below Example will wait for 5 Seconds.
+
+      Utility.commonWait(5);
+
 - **getProperty(String xpath, String attribute)**: Retrieves the value of a specified attribute from a web element identified by the given XPath.
 - **executeJS(String xpath, String arguments)**: Executes a JavaScript snippet on a web element identified by the given XPath.
+- **endSession**: Simple but more reusable in Automation. A method will close the Tab's / Browser window.
+- **navigateWithArguments**: The navigateWithArguments method is a versatile and flexible way to initialize a WebDriver for different browsers, allowing for various configurations through a simple options map. This design makes it easy to adapt the method for different testing scenarios and browser requirements. Find the below Example for declaration and usage of this method.
+
+      Map<String, Object> options = new HashMap<>();
+      options.put("incognito", true);
+      options.put("disableCache", true);
+      options.put("headless", true); // For headless mode
+      options.put("ignoreZoomSetting", true); // For Internet Explorer
+      options.put("requireWindowFocus", true); // For Internet Explorer
+      Utility.navigateWithArguments("chrome", "https://www.example.com", options);
+    
 
 # In-Pipeline
 
