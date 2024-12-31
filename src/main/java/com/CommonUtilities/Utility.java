@@ -19,9 +19,13 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -513,5 +517,92 @@ public class Utility {
 				System.out.println("Ther was an " + e + " Exception occured.");
 			}
 		}
+	}
+
+	/**
+	 * Method to close the browser and tabs.
+	 */
+	public void endSession() {
+		if (driver != null) {
+			driver.quit();
+		}
+	}
+
+	/**
+	 * Method to set the browser with set of options and navigate to url.
+	 * 
+	 * @param browserName
+	 * @param url
+	 * @param options
+	 * 
+	 */
+	public void navigateWithArguments(String browserName, String url, Map<String, Object> options) {
+		switch (browserName.toLowerCase()) {
+		case "chrome":
+			WebDriverManager.chromedriver().setup();
+			ChromeOptions chromeOptions = new ChromeOptions();
+			if (options != null) {
+				if (options.containsKey("incognito") && (boolean) options.get("incognito")) {
+					chromeOptions.addArguments("--incognito");
+				}
+				if (options.containsKey("disableCache") && (boolean) options.get("disableCache")) {
+					chromeOptions.addArguments("--disable-application-cache");
+				}
+				if (options.containsKey("headless") && (boolean) options.get("headless")) {
+					chromeOptions.addArguments("--headless");
+				}
+			}
+			driver = new ChromeDriver(chromeOptions);
+			break;
+		case "edge":
+			WebDriverManager.edgedriver().setup();
+			EdgeOptions edgeOptions = new EdgeOptions();
+			if (options != null) {
+				if (options.containsKey("headless") && (boolean) options.get("headless")) {
+					edgeOptions.addArguments("--headless");
+				}
+				if (options.containsKey("disableCache") && (boolean) options.get("disableCache")) {
+					edgeOptions.addArguments("--disable-application-cache");
+				}
+			}
+			driver = new EdgeDriver(edgeOptions);
+			break;
+		case "ie":
+			WebDriverManager.iedriver().setup();
+			InternetExplorerOptions ieOptions = new InternetExplorerOptions();
+			if (options != null) {
+				if (options.containsKey("ignoreZoomSetting") && (boolean) options.get("ignoreZoomSetting")) {
+					ieOptions.requireWindowFocus();
+				}
+				if (options.containsKey("enablePersistentHover") && (boolean) options.get("enablePersistentHover")) {
+					ieOptions.enablePersistentHovering();
+				}
+			}
+			driver = new InternetExplorerDriver(ieOptions);
+			break;
+		case "firefox":
+			WebDriverManager.firefoxdriver().setup();
+			FirefoxOptions firefoxOptions = new FirefoxOptions();
+			if (options != null) {
+				if (options.containsKey("headless") && (boolean) options.get("headless")) {
+					firefoxOptions.addArguments("--headless");
+				}
+				if (options.containsKey("disableCache") && (boolean) options.get("disableCache")) {
+					firefoxOptions.addPreference("browser.cache.disk.enable", false);
+					firefoxOptions.addPreference("browser.cache.memory.enable", false);
+					firefoxOptions.addPreference("browser.cache.offline.enable", false);
+				}
+			}
+			driver = new FirefoxDriver(firefoxOptions);
+			break;
+		default:
+			throw new IllegalArgumentException("Unsupported browser: " + browserName);
+		}
+		this.wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+		this.actions = new Actions(driver);
+		this.js = (JavascriptExecutor) driver;
+		driver.manage().window().maximize();
+		driver.get(url);
+		waitUntilPageLoaded();
 	}
 }
