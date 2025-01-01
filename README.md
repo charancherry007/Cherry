@@ -66,7 +66,23 @@ Example: Enter **Automation Tutorial** as text and press **ENTER** key.
       options.put("ignoreZoomSetting", true); // For Internet Explorer
       options.put("requireWindowFocus", true); // For Internet Explorer
       Utility.navigateWithArguments("chrome", "https://www.example.com", options);
-    
+
+- **loadPropertyFile**: The loadPropertyFile method simplifies the process of loading configuration settings from a properties file into a Properties object. It handles file reading, error management, and resource cleanup, making it a valuable addition framework that relies on external configuration files. This method allows to easily manage application config's and modify them without changing the source code.
+  
+           utility.loadPropertyFile("src/test/resources/data.properties");          
+
+- **getPropertyValue**: The method is useful for safely accessing configuration values from a properties file while providing feedback if the key is not found or if there is an issue with the properties file.
+  
+         utility.getPropertyValue("url");
+
+- **openNewTab**: The method aims to open a new browser tab using JavaScript. This will be more help full while working with multiple tabs during automated testing.
+      
+         utility.openNewTab();
+
+- **goTo**: The goTo method is a useful utility for navigating to URLs in Selenium tests. By enhancing its error handling, logging, and URL validation.
+      
+         utility.goTo("https://example.com");
+
 
 # In-Pipeline
 
