@@ -1,5 +1,8 @@
 package com.CommonUtilities;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -7,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.ElementNotInteractableException;
@@ -46,6 +50,7 @@ public class Utility {
 	private WebDriverWait wait;
 	private WebElement element;
 	private JavascriptExecutor js;
+	private Properties properties;
 	private Map<String, Object> storeValue = new HashMap<>();
 
 	/**
@@ -80,7 +85,11 @@ public class Utility {
 		this.actions = new Actions(driver);
 		this.js = (JavascriptExecutor) driver;
 		driver.manage().window().maximize();
-		driver.get(url);
+		try {
+			driver.get(url);
+		} catch (Exception e) {
+			driver.navigate().to(url);
+		}
 		waitUntilPageLoaded();
 	}
 
@@ -406,8 +415,11 @@ public class Utility {
 			case "shift_release":
 				actions.keyUp(Keys.SHIFT).perform();
 				break;
+			case "ctrl":
+				actions.keyDown(Keys.CONTROL).perform();
+				break;
 			default:
-				actions.sendKeys(key).perform();
+				actions.sendKeys(" " + key).perform();
 				break;
 			}
 		}
@@ -416,8 +428,13 @@ public class Utility {
 	/**
 	 * This method will wait until the DOM is loaded completly.
 	 */
-	public Boolean waitUntilPageLoaded() {
-		return ((JavascriptExecutor) js).executeScript("return document.readyState").equals("complete");
+	public void waitUntilPageLoaded() {
+		try {
+			js.executeScript("return document.readyState").equals("complete");
+		} catch (Exception e) {
+			System.out.println("There was an error while waiting for readyState of page");
+		}
+
 	}
 
 	/**
@@ -602,7 +619,74 @@ public class Utility {
 		this.actions = new Actions(driver);
 		this.js = (JavascriptExecutor) driver;
 		driver.manage().window().maximize();
-		driver.get(url);
+		try {
+			driver.get(url);
+		} catch (Exception e) {
+			driver.navigate().to(url);
+		}
+		waitUntilPageLoaded();
+	}
+
+	/**
+	 * Method to load the property file with path as String.
+	 * 
+	 * @param propertiesFilePath
+	 */
+	public void loadPropertyFile(String propertiesFilePath) {
+		properties = new Properties();
+		try (InputStream input = new FileInputStream(propertiesFilePath)) {
+			properties.load(input);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to find properties file at given path : " + propertiesFilePath);
+		}
+	}
+
+	/**
+	 * Method will retrive the value from the property file and return its value
+	 * based on the data type.
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public String getPropertyValue(String key) {
+		String value = null;
+		try {
+			value = properties.getProperty(key);
+			if (value == null || value.isEmpty()) {
+				System.out.println("There is no value assigned for the key: " + key + " in the property file.");
+				return null;
+			} else {
+				return value;
+			}
+		} catch (Exception e) {
+			System.out.println("There is no key: " + key + " in the property file.");
+			return null;
+		}
+	}
+
+	/**
+	 * Method to open new tab in the browser.
+	 */
+	public void openNewTab() {
+		try {
+			js.executeScript("window.open('', '_blank');");
+			commonWait(3);
+		} catch (Exception e) {
+			System.out.println("There was an error while launching new tab.");
+		}
+	}
+
+	/**
+	 * Method to launch url in active browser.
+	 * 
+	 * @param url String.
+	 */
+	public void goTo(String url) {
+		try {
+			driver.get(url);
+		} catch (Exception e) {
+			driver.navigate().to(url);
+		}
 		waitUntilPageLoaded();
 	}
 }
