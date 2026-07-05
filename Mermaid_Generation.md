@@ -2,46 +2,53 @@
 
 **Authors:** Your Team
 
-**Description:** Generates a single high-level Mermaid workflow diagram from a Standard Operating Procedure (SOP). This skill analyzes business processes only and produces a Mermaid Flowchart representing the workflow. It does not generate implementation code or modify the repository except for the explicitly authorized output directory.
+**Description:** Converts a Standard Operating Procedure (SOP) into a single high-level Mermaid Flowchart representing the complete business workflow. This skill is responsible only for workflow extraction and Mermaid diagram generation. It does **not** modify the repository, generate implementation code, or create rendered artifacts.
 
 **Version:** 1.0
 
 ---
 
-# Overview
+# Purpose
 
-This skill converts a Standard Operating Procedure (SOP) into a single Mermaid Flowchart that visualizes the complete business workflow.
+This skill transforms an SOP into a business-readable Mermaid workflow that can be consumed by downstream documentation or rendering tools.
 
 The generated workflow should help users understand:
 
 - Business process
-- System interactions
+- Workflow sequence
 - Decision points
-- Alternate flows
+- Alternate paths
 - Failure paths
-- Start and End states
+- External system interactions
+- Business actors (when documented)
 
-The output is intended for technical documentation and workflow visualization.
+This skill focuses exclusively on workflow visualization.
 
 ---
 
 # Scope
 
-This skill ONLY performs the following:
+This skill SHALL ONLY:
 
-- Read SOP documentation.
+- Read the SOP.
+- Analyze the documented workflow.
 - Identify workflow sequence.
 - Identify business actors.
 - Identify participating systems.
 - Identify business decisions.
 - Identify alternate paths.
 - Identify failure paths.
-- Generate a single Mermaid Flowchart.
-- Validate the generated workflow.
-- Render the workflow as a PDF.
-- Save the generated PDF to the authorized repository location.
+- Generate one Mermaid Flowchart.
 
-This skill MUST NOT perform any additional analysis or generate any other Mermaid diagram type.
+This skill SHALL NOT:
+
+- Generate implementation code.
+- Generate test cases.
+- Generate architecture documentation.
+- Generate API documentation.
+- Generate sequence diagrams.
+- Generate class diagrams.
+- Modify repository files.
 
 ---
 
@@ -49,9 +56,9 @@ This skill MUST NOT perform any additional analysis or generate any other Mermai
 
 ## Required
 
-- SOP Document
+- Standard Operating Procedure (SOP)
 
-## Optional
+## Optional Reference
 
 - Repository Documentation
 - Knowledge Graph
@@ -59,17 +66,15 @@ This skill MUST NOT perform any additional analysis or generate any other Mermai
 
 Reference documentation may only be used to clarify terminology.
 
-The SOP is the single source of truth.
+The SOP remains the single source of truth.
 
 ---
 
 # Repository Permissions
 
-This skill follows a **least-privilege execution model**.
+This skill follows a **strict read-only execution model**.
 
-Unless explicitly authorized below, the repository must be treated as **read-only**.
-
----
+The repository must be treated as read-only at all times.
 
 ## Read Access
 
@@ -79,78 +84,30 @@ This skill MAY read:
 - Repository documentation
 - Knowledge Graph
 - Existing Agent Skills
-- Existing Markdown documentation
-- Supporting reference documents
+- Supporting Markdown documentation
 
-These resources are used only for workflow analysis.
-
----
-
-## Write Access (Explicitly Authorized)
-
-This skill is authorized to write **ONLY** to the following directory:
-
-```text
-src/mermaid-diagrams/
-```
-
-No other repository location may be:
-
-- Created
-- Modified
-- Renamed
-- Deleted
-- Overwritten
-
-This is the **only** filesystem modification permitted.
+These resources are used only to improve workflow understanding.
 
 ---
 
-## Authorized Output
+## Repository Protection
 
-After generating the workflow:
+This skill MUST NOT:
 
-1. Generate the Mermaid Flowchart.
-2. Validate Mermaid syntax.
-3. Render the workflow.
-4. Export the rendered workflow as a PDF.
-5. Save exactly one file:
+- Create files
+- Modify files
+- Delete files
+- Rename files
+- Move files
+- Generate repository artifacts
+- Modify source code
+- Modify configuration
+- Modify documentation
+- Modify prompts
+- Modify Agent Skills
+- Modify repository structure
 
-```text
-src/mermaid-diagrams/<SOP_NAME>.pdf
-```
-
-Where:
-
-- `<SOP_NAME>` is derived from the SOP filename.
-- Replace spaces with hyphens (`-`).
-- Remove unsupported filename characters.
-- Preserve readable naming where possible.
-
-Examples:
-
-```text
-Customer-Onboarding.pdf
-Portfolio-Analysis.pdf
-Trade-Settlement.pdf
-Claims-Processing.pdf
-```
-
----
-
-## Directory Creation
-
-If
-
-```text
-src/mermaid-diagrams/
-```
-
-does not exist,
-
-this skill MAY create **only** this directory.
-
-No other directories may be created.
+No filesystem modifications are permitted.
 
 ---
 
@@ -162,61 +119,57 @@ Generate exactly one Mermaid Flowchart using:
 flowchart TD
 ```
 
-The workflow must include:
+The workflow must include, where documented:
 
 - Start node
 - End node
-- Sequential business process steps
+- Business process steps
 - Decision nodes
 - Success paths
 - Failure paths
 - Alternate paths
 - External systems
-- Business actors (when explicitly mentioned)
+- Business actors
+
+The workflow should represent the SOP exactly as documented.
 
 ---
 
 # Workflow Extraction Rules
 
-Extract only information explicitly documented within the SOP.
+Extract only information explicitly present within the SOP.
 
 Never invent:
 
 - Business rules
-- Missing workflow steps
+- Workflow steps
+- Decision points
 - Systems
 - Actors
 - Integrations
-- Decisions
 - Validation rules
+- Exception paths
 
-If information is absent from the SOP, omit it.
+If information is not documented, omit it.
 
 ---
 
 # Node Design Rules
 
-Every workflow node MUST contain a meaningful business description.
+Each process node MUST represent exactly one business action.
 
-Each node shall contain:
+Decision nodes MUST contain exactly one business question.
 
-- Business action
-- Optional business object
-- Optional responsible actor
+Every node MUST contain meaningful visible text.
 
-Examples:
+Good examples:
 
-✓ Receive Customer Request
-
-✓ Validate Portfolio Data
-
-✓ Submit Approval Request
-
-✓ Review Compliance Status
-
-✓ Update CRM
-
-✓ Notify Customer
+- Receive Customer Request
+- Validate Portfolio Details
+- Review Compliance Status
+- Submit Approval Request
+- Notify Customer
+- Update CRM
 
 Avoid generic labels such as:
 
@@ -226,56 +179,69 @@ Avoid generic labels such as:
 - Task
 - Validation
 
-Do not leave any node unlabeled.
+Never leave a node unlabeled.
 
-Every node MUST contain visible text.
+Avoid implementation terminology including:
+
+- Method names
+- Class names
+- API endpoints
+- SQL queries
+- Database operations
+- Programming terminology
+
+Use business language only.
+
 ---
 
 # Decision Rules
 
-Every documented decision must contain all documented outcomes.
+Every documented business decision must include all documented outcomes.
 
-Include:
+Where applicable include:
 
 - Yes path
 - No path
 
-Where multiple outcomes exist, represent each documented outcome explicitly.
+If multiple outcomes exist, represent each documented outcome.
+
+Do not invent undocumented branches.
 
 ---
 
 # External Systems
 
-Represent each external system as an independent node.
+Represent every documented external system as an independent node.
 
 Examples:
 
-- CRM
 - Salesforce
+- CRM
 - ERP
-- Notification Service
 - Payment Gateway
+- Notification Service
+- Identity Provider
 
-Do not combine business actions with external systems.
+Do not merge systems into business actions.
 
 ---
 
 # Flow Rules
 
-The workflow must:
+The generated workflow must:
 
 - Flow from top to bottom (`TD`)
-- Preserve the SOP sequence exactly
+- Preserve the documented workflow order
 - Minimize crossing connectors
 - Keep related branches together
-- Merge branches only when documented in the SOP
-- Avoid unnecessary complexity
+- Merge branches only when documented
+- Keep the workflow visually readable
 
 ---
 
 # Mermaid Rules
 
-Generate **ONLY** Mermaid Flowcharts.
+Generate ONLY a Mermaid Flowchart.
 
 Do NOT generate:
 
@@ -284,109 +250,64 @@ Do NOT generate:
 - ER Diagrams
 - State Diagrams
 - Gantt Charts
+- Git Graphs
 - Mind Maps
 - User Journey Diagrams
 - Pie Charts
-- Git Graphs
 
 The generated Mermaid must be compatible with:
 
-- GitHub
-- VS Code Mermaid Preview
 - Mermaid v11
+- GitHub Markdown
+- VS Code Mermaid Preview
 
 ---
 
-# Workflow Validation Checklist
+# Diagram Content Validation
 
-Before rendering the PDF, verify:
+Before returning the Mermaid diagram verify:
 
-- Exactly one Start node exists.
-- Exactly one End node exists.
-- Every workflow step originates from the SOP.
-- Every documented decision is represented.
-- Every documented alternate path is included.
-- Every documented failure path is included.
-- External systems are represented.
-- Business actors are represented where documented.
-- No orphan nodes exist.
-- Workflow order matches the SOP.
-- Mermaid syntax is valid.
-- Diagram renders successfully.
+✓ Every node contains visible text.
 
-Only after **all validations succeed** may the PDF be generated.
+✓ No node label is empty.
 
----
+✓ No placeholder text exists.
 
-# Strict Repository Protection
+✓ Every decision contains a business question.
 
-This skill MUST NOT:
+✓ Every edge connects valid nodes.
 
-### Modify Repository
+✓ Every workflow step originates from the SOP.
 
-- Source code
-- Configuration files
-- Build scripts
-- CI/CD configuration
-- Existing documentation
-- Existing prompts
-- Existing Agent Skills
-- Existing Mermaid diagrams
+✓ Every documented alternate path is represented.
 
-### Modify Repository Structure
+✓ Every documented failure path is represented.
 
-- Create folders outside the authorized directory
-- Rename folders
-- Delete folders
-- Move files
+✓ External systems are represented where documented.
 
-### Generate Additional Artifacts
+✓ No orphan nodes exist.
 
-Do NOT generate:
+✓ Workflow order matches the SOP.
 
-- PNG
-- SVG
-- Mermaid (.mmd)
-- Markdown (.md)
-- JSON
-- HTML
-- DOCX
-- TXT
-- ZIP
+✓ Mermaid syntax is valid.
 
-unless explicitly requested by another skill.
+If any validation fails, regenerate the workflow instead of returning an incomplete diagram.
 
 ---
 
-# Failure Handling
+# Output
 
-If any validation or rendering step fails:
+Return exactly one Mermaid Flowchart enclosed in a fenced Mermaid code block.
 
-- Do not generate a partial PDF.
-- Do not create temporary files.
-- Do not write anywhere outside the authorized directory.
-- Report the validation or rendering failure.
-- Stop execution.
+Example:
 
----
-
-# Success Criteria
-
-A successful execution produces **exactly one repository artifact**:
-
-```text
-src/
-└── mermaid-diagrams/
-    └── <SOP_NAME>.pdf
+````text
+```mermaid
+flowchart TD
+    A([Start]) --> B[Receive Request]
+    B --> C{Valid?}
+    C -->|Yes| D[Process Request]
+    C -->|No| E[Reject Request]
+    D --> F([End])
+    E --> F
 ```
-
-No additional files, directories, or repository modifications are permitted.
-
-The generated workflow must:
-
-- Accurately represent the SOP.
-- Be business-focused.
-- Be implementation-independent.
-- Be visually readable.
-- Be syntactically valid Mermaid.
-- Render successfully as a PDF.
