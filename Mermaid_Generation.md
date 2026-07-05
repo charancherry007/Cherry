@@ -196,30 +196,39 @@ If information is absent from the SOP, omit it.
 
 # Node Design Rules
 
-Each process node represents **one business action**.
+Every workflow node MUST contain a meaningful business description.
 
-Decision nodes represent **one business decision**.
+Each node shall contain:
 
-Prefer business terminology.
+- Business action
+- Optional business object
+- Optional responsible actor
 
 Examples:
 
-- Receive Request
-- Validate Input
-- Approve Request
-- Reject Request
-- Submit Portfolio
-- Notify User
+✓ Receive Customer Request
 
-Avoid implementation terminology including:
+✓ Validate Portfolio Data
 
-- API endpoints
-- Method names
-- Class names
-- Database operations
-- SQL queries
-- Programming concepts
+✓ Submit Approval Request
 
+✓ Review Compliance Status
+
+✓ Update CRM
+
+✓ Notify Customer
+
+Avoid generic labels such as:
+
+- Process
+- Step
+- Action
+- Task
+- Validation
+
+Do not leave any node unlabeled.
+
+Every node MUST contain visible text.
 ---
 
 # Decision Rules
